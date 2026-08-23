@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <meta name="robots" content="noindex, nofollow">
+
+  <meta name="theme-color" content="#070b13">
+
+  <title>Age Verification</title>
+
+  <style>
+    :root {
+      --background: #070b13;
+      --card: #111827;
+      --card-border: #263244;
+
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.12);
+
+      --green: #0caf7d;
+      --green-hover: #12c18d;
+      --green-dark: #087b5a;
+
+      --white: #ffffff;
+      --text-soft: #9ca3af;
+      --text-muted: #70798a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--background);
+    }
+
+    html {
+      overscroll-behavior: none;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 22px;
+      padding: max(22px, env(safe-area-inset-top)) max(22px, env(safe-area-inset-right)) max(22px, env(safe-area-inset-bottom)) max(22px, env(safe-area-inset-left));
+
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+      background:
+        radial-gradient(
+          circle at 50% -15%,
+          rgba(59, 130, 246, 0.08),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 50% 115%,
+          rgba(12, 175, 125, 0.05),
+          transparent 30%
+        ),
+        var(--background);
+
+      color: var(--white);
+
+      overscroll-behavior: none;
+    }
+
+    .age-card {
+      position: relative;
+
+      width: min(100%, 430px);
+
+      padding: 48px 34px 36px;
+
+      border: 1px solid var(--card-border);
+
+      border-radius: 25px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #121b2b 0%,
+          #101827 100%
+        );
+
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+      overflow: hidden;
+    }
+
+    .age-card::before {
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+      left: 18%;
+      right: 18%;
+
+      height: 2px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          var(--blue),
+          transparent
+        );
+
+      opacity: 0.9;
+    }
+
+    .badge-wrap {
+      display: flex;
+      justify-content: center;
+
+      margin-bottom: 27px;
+    }
+
+    .badge {
+      padding: 7px 16px;
+
+      border: 1px solid rgba(59, 130, 246, 0.38);
+
+      border-radius: 999px;
+
+      background: rgba(59, 130, 246, 0.09);
+
+      color: #79b4ff;
+
+      font-size: 10px;
+      font-weight: 800;
+
+      letter-spacing: 1.5px;
+
+      text-transform: uppercase;
+    }
+
+    .headline {
+      max-width: 330px;
+
+      margin: 0 auto;
+
+      color: #ffffff;
+
+      font-size: clamp(26px, 7vw, 31px);
+      font-weight: 850;
+      line-height: 1.12;
+
+      letter-spacing: -0.8px;
+
+      text-align: center;
+
+      text-wrap: balance;
+    }
+
+    .subheadline {
+      max-width: 315px;
+
+      margin: 13px auto 30px;
+
+      color: var(--text-soft);
+
+      font-size: 14px;
+      line-height: 1.5;
+
+      text-align: center;
+    }
+
+    /* ==============================================
+       AGE CONFIRMATION
+       ============================================== */
+
+    .confirmation {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      width: 100%;
+
+      min-height: 74px;
+
+      padding: 17px 20px;
+
+      border: 2px solid #34445d;
+
+      border-radius: 16px;
+
+      background: rgba(255, 255, 255, 0.015);
+
+      cursor: pointer;
+
+      transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+
+      user-select: none;
+
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .confirmation:hover {
+      border-color: rgba(59, 130, 246, 0.75);
+
+      background: rgba(59, 130, 246, 0.035);
+    }
+
+    .confirmation.active {
+      border-color: var(--blue);
+
+      background: var(--blue-soft);
+
+      box-shadow:
+        0 0 0 1px rgba(59, 130, 246, 0.22),
+        0 0 22px rgba(59, 130, 246, 0.09);
+    }
+
+    .confirmation input {
+      position: absolute;
+
+      opacity: 0;
+
+      pointer-events: none;
+    }
+
+    .confirmation:focus-within {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .check-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 25px;
+      height: 25px;
+
+      flex-shrink: 0;
+
+      border: 2px solid #53637a;
+
+      border-radius: 50%;
+
+      color: transparent;
+
+      font-size: 14px;
+      font-weight: 900;
+
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+    }
+
+    .confirmation.active .check-circle {
+      border-color: var(--blue);
+
+      background: var(--blue);
+
+      color: #ffffff;
+    }
+
+    .confirmation-text {
+      flex: 1;
+
+      color: #f4f7fb;
+
+      font-size: 15px;
+      font-weight: 750;
+      line-height: 1.35;
+
+      text-align: center;
+    }
+
+    /* ==============================================
+       BUTTON
+       ============================================== */
+
+    .continue-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+
+      min-height: 62px;
+
+      margin-top: 16px;
+
+      padding: 16px 18px;
+
+      border: 0;
+
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          180deg,
+          #13bc89 0%,
+          var(--green) 100%
+        );
+
+      color: #ffffff;
+
+      font-family: inherit;
+
+      font-size: 16px;
+      font-weight: 850;
+
+      letter-spacing: 0.5px;
+
+      text-decoration: none;
+      text-align: center;
+
+      box-shadow:
+        0 4px 0 var(--green-dark),
+        0 10px 25px rgba(12, 175, 125, 0.16);
+
+      cursor: pointer;
+
+      transition:
+        transform 0.2s ease,
+        filter 0.2s ease,
+        opacity 0.2s ease,
+        box-shadow 0.2s ease;
+
+      -webkit-tap-highlight-color: transparent;
+
+      touch-action: manipulation;
+    }
+
+    .continue-button:hover:not(.disabled) {
+      transform: translateY(-2px);
+
+      filter: brightness(1.06);
+
+      box-shadow:
+        0 6px 0 var(--green-dark),
+        0 14px 30px rgba(12, 175, 125, 0.22);
+    }
+
+    .continue-button:active:not(.disabled) {
+      transform: translateY(3px);
+
+      box-shadow:
+        0 1px 0 var(--green-dark),
+        0 5px 15px rgba(12, 175, 125, 0.16);
+    }
+
+    .continue-button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    .continue-button.disabled {
+      opacity: 0.4;
+
+      cursor: not-allowed;
+
+      filter: grayscale(0.25);
+
+      box-shadow:
+        0 3px 0 rgba(8, 123, 90, 0.7),
+        0 7px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ==============================================
+       BOTTOM NOTE
+       ============================================== */
+
+    .bottom-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+
+      margin-top: 25px;
+
+      color: var(--text-muted);
+
+      font-size: 11px;
+      line-height: 1.4;
+
+      text-align: center;
+    }
+
+    .lock-icon {
+      position: relative;
+
+      width: 11px;
+      height: 9px;
+
+      border-radius: 2px;
+
+      background: #717a8c;
+
+      opacity: 0.85;
+
+      flex-shrink: 0;
+    }
+
+    .lock-icon::before {
+      content: "";
+
+      position: absolute;
+
+      width: 6px;
+      height: 6px;
+
+      top: -5px;
+      left: 50%;
+
+      transform: translateX(-50%);
+
+      border: 2px solid #717a8c;
+      border-bottom: 0;
+
+      border-radius: 6px 6px 0 0;
+    }
+
+    .legal {
+      max-width: 400px;
+
+      margin: 20px auto 0;
+
+      color: #535b6a;
+
+      font-size: 9px;
+      line-height: 1.5;
+
+      text-align: center;
+    }
+
+    /* ==============================================
+       SHAKE IF USER CLICKS WITHOUT CHECKING
+       ============================================== */
+
+    @keyframes shake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-5px);
+      }
+
+      50% {
+        transform: translateX(5px);
+      }
+
+      75% {
+        transform: translateX(-3px);
+      }
+    }
+
+    .shake {
+      animation: shake 0.3s ease;
+    }
+
+    /* ==============================================
+       MOBILE
+       ============================================== */
+
+    @media (max-width: 500px) {
+      body {
+        padding: 16px;
+        padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+      }
+
+      .age-card {
+        width: 100%;
+
+        padding:
+          38px
+          22px
+          29px;
+
+        border-radius: 22px;
+      }
+
+      .badge-wrap {
+        margin-bottom: 23px;
+      }
+
+      .headline {
+        font-size: 27px;
+      }
+
+      .subheadline {
+        margin-bottom: 25px;
+
+        font-size: 13px;
+      }
+
+      .confirmation {
+        min-height: 72px;
+
+        padding: 15px 15px;
+      }
+
+      .confirmation-text {
+        font-size: 14px;
+      }
+
+      .continue-button {
+        min-height: 59px;
+
+        font-size: 15px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .age-card {
+        padding: 32px 16px 24px;
+      }
+
+      .headline {
+        font-size: 23px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="age-card">
+
+    <div class="badge-wrap">
+      <div class="badge">
+        AGE VERIFICATION
+      </div>
+    </div>
+
+
+    <!-- ALTERE O TÍTULO AQUI -->
+
+    <h1 class="headline">
+      Are you over 18 years old?
+    </h1>
+
+
+    <!-- ALTERE O SUBTÍTULO AQUI -->
+
+    <p class="subheadline">
+      Please confirm your age to access the private presentation.
+    </p>
+
+
+    <!-- =============================================
+         CONFIRMAÇÃO DE IDADE
+         ============================================= -->
+
+    <label
+      class="confirmation"
+      id="ageConfirmation"
+      for="ageCheckbox"
+    >
+
+      <input
+        type="checkbox"
+        id="ageCheckbox"
+      >
+
+      <span class="check-circle">
+        ✓
+      </span>
+
+      <span class="confirmation-text">
+        Yes, I am 18 years old or older
+      </span>
+
+    </label>
+
+
+    <!-- =============================================
+         BOTÃO
+
+         LINK:
+         https://eduardazottis.github.io/jelly-fill/
+         ============================================= -->
+
+    <a
+      href="https://eduardazottis.github.io/jelly-fill/"
+      id="continueButton"
+      class="continue-button disabled"
+      rel="noopener noreferrer"
+      aria-disabled="true"
+    >
+      I’M 18+ — CONTINUE
+    </a>
+
+
+    <div class="bottom-note">
+      <span class="lock-icon"></span>
+      <span>Continue to the private presentation</span>
+    </div>
+
+
+    <div class="legal">
+      By continuing, you confirm that you are at least 18 years old.
+    </div>
+
+  </main>
+
+
+  <script>
+    /*
+    ============================================================
+    LINK DE DESTINO
+    ============================================================
+    */
+
+    const destinationUrl =
+      "https://eduardazottis.github.io/jelly-fill/";
+
+
+    const ageCheckbox =
+      document.getElementById("ageCheckbox");
+
+    const ageConfirmation =
+      document.getElementById("ageConfirmation");
+
+    const continueButton =
+      document.getElementById("continueButton");
+
+
+    /*
+    ============================================================
+    ATIVA / DESATIVA O BOTÃO
+    ============================================================
+    */
+
+    function updateAgeState() {
+
+      if (ageCheckbox.checked) {
+
+        ageConfirmation.classList.add("active");
+
+        continueButton.classList.remove("disabled");
+
+        continueButton.setAttribute(
+          "aria-disabled",
+          "false"
+        );
+
+      } else {
+
+        ageConfirmation.classList.remove("active");
+
+        continueButton.classList.add("disabled");
+
+        continueButton.setAttribute(
+          "aria-disabled",
+          "true"
+        );
+
+      }
+
+    }
+
+
+    ageCheckbox.addEventListener(
+      "change",
+      updateAgeState
+    );
+
+
+    /*
+    ============================================================
+    IMPEDE O ACESSO SEM CONFIRMAR 18+
+    ============================================================
+    */
+
+    continueButton.addEventListener(
+      "click",
+      function(event) {
+
+        event.preventDefault();
+
+
+        if (!ageCheckbox.checked) {
+
+          ageConfirmation.classList.remove("shake");
+
+          void ageConfirmation.offsetWidth;
+
+          ageConfirmation.classList.add("shake");
+
+          return;
+
+        }
+
+
+        window.location.href = destinationUrl;
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
